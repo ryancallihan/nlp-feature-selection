@@ -1,7 +1,5 @@
 # How Word Embeddings Effect NLP Models
 
-[Colab Notebook](https://colab.research.google.com/drive/132Ux-u4yNoGlVxKLy0D1_rAaTwC4Euf-)
-
 This notebook will explore come different feature selection methods for NLP models. It will cover the following topics:
 
 - Tokenisation
@@ -101,77 +99,14 @@ train_df['tokenized'] = [[t for t in word_tokenize(r.lower()) if t not in stopwo
 test_df['tokenized'] = [[t for t in word_tokenize(r.lower()) if t not in stopwords] for r in tqdm(test_df.text)]
 ```
 
-    100%|██████████| 25000/25000 [00:55<00:00, 450.34it/s]
-    100%|██████████| 10000/10000 [00:21<00:00, 458.05it/s]
+    100%|██████████| 25000/25000 [00:54<00:00, 455.00it/s]
+    100%|██████████| 10000/10000 [00:21<00:00, 467.13it/s]
 
 
 
 ```python
-train_df.head()
+# train_df.head()
 ```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>text</th>
-      <th>sentiment</th>
-      <th>tokenized</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Steven Spielberg (at 24) had already directed ...</td>
-      <td>1</td>
-      <td>[steven, spielberg, 24, already, directed, two...</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>This is a very light headed comedy about a won...</td>
-      <td>1</td>
-      <td>[light, headed, comedy, wonderful, family, son...</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>When I was little, my parents got this movie f...</td>
-      <td>1</td>
-      <td>[little, parents, got, movie, watch, really, l...</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Hilarious, evocative, confusing, brilliant fil...</td>
-      <td>1</td>
-      <td>[hilarious, evocative, confusing, brilliant, f...</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>All Dogs Go to Heaven plays on the canine crim...</td>
-      <td>1</td>
-      <td>[dogs, go, heaven, plays, canine, criminal, un...</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
 
 ## Some Minor Data Exporation
 
@@ -198,7 +133,7 @@ train_df.sentiment.value_counts().plot.bar()
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f9e08287f60>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7fc1152f9080>
 
 
 
@@ -220,7 +155,7 @@ train_df.hist(column='token_count', bins=30, figsize=(15, 9))
 
 
 
-    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7f9e081cef60>]],
+    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7fc115293128>]],
           dtype=object)
 
 
@@ -251,7 +186,7 @@ df.sort_index(ascending=True).head(90).plot.bar(x='tokens', y='counts', figsize=
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f9e07c68320>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7fc114d57eb8>
 
 
 
@@ -278,7 +213,7 @@ df.sort_index(ascending=True).head(90).plot.bar(x='tokens', y='counts', figsize=
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f9e07c1a400>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7fc114d03be0>
 
 
 
@@ -372,17 +307,17 @@ indexer
 
 
 
-    {'!': 8,
-     '.': 11,
-     'I': 9,
+    {'!': 7,
+     '.': 10,
+     'I': 1,
      'They': 6,
-     'We': 0,
-     'but': 10,
-     'cheese': 7,
-     'do': 5,
-     'like': 3,
-     'mild': 1,
-     'not': 2,
+     'We': 8,
+     'but': 5,
+     'cheese': 9,
+     'do': 0,
+     'like': 2,
+     'mild': 3,
+     'not': 11,
      'stinky': 4}
 
 
@@ -401,7 +336,7 @@ vec
 
 
 
-    array([0., 0., 0., 1., 0., 0., 0., 1., 0., 1., 0., 1.])
+    array([0., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 0.])
 
 
 
@@ -415,9 +350,9 @@ for i, v in enumerate(vec):
         print(f'Token: {indexer_inverse[i]:<7} | Count: {int(v)}')
 ```
 
+    Token: I       | Count: 1
     Token: like    | Count: 1
     Token: cheese  | Count: 1
-    Token: I       | Count: 1
     Token: .       | Count: 1
 
 
@@ -437,14 +372,14 @@ def dummy_func(doc):
 
 one_hot = CountVectorizer(preprocessor=dummy_func, tokenizer=dummy_func, min_df=5, max_features=20000)
 one_hot.fit(train_df.tokenized)
-print(f'Length of vocabulary: {len(one_hot.vocabulary_)}')
+print(f'Feature Dimensions: {(len(train_df), len(one_hot.vocabulary_))}')
 ```
 
     /usr/local/lib/python3.6/dist-packages/sklearn/feature_extraction/text.py:507: UserWarning: The parameter 'token_pattern' will not be used since 'tokenizer' is not None'
       warnings.warn("The parameter 'token_pattern' will not be used"
 
 
-    Length of vocabulary: 20000
+    Feature Dimentions: (25000, 20000)
 
 
 It's pretty easy to use
@@ -453,7 +388,7 @@ It's pretty easy to use
 ```python
 print(f'Text: {train_df.text.values[0][:50]}')
 vec = one_hot.transform([train_df.tokenized.values[0]]).toarray()
-print(f'Feature Dimentions: {vec.shape}')
+print(f'Feature Dimensions: {vec.shape}')
 vec
 ```
 
@@ -489,25 +424,25 @@ oh_history = oh_model.fit(
     Use tf.where in 2.0, which has the same broadcast rule as np.where
     Train on 25000 samples, validate on 10000 samples
     Epoch 1/10
-    25000/25000 [==============================] - 12s 474us/sample - loss: 0.7153 - acc: 0.5068 - val_loss: 0.6801 - val_acc: 0.8155
+    25000/25000 [==============================] - 11s 450us/sample - loss: 0.7267 - acc: 0.5044 - val_loss: 0.6814 - val_acc: 0.7477
     Epoch 2/10
-    25000/25000 [==============================] - 12s 460us/sample - loss: 0.6247 - acc: 0.6480 - val_loss: 0.4505 - val_acc: 0.8535
+    25000/25000 [==============================] - 11s 429us/sample - loss: 0.6394 - acc: 0.6238 - val_loss: 0.4614 - val_acc: 0.8583
     Epoch 3/10
-    25000/25000 [==============================] - 11s 449us/sample - loss: 0.3617 - acc: 0.8617 - val_loss: 0.3068 - val_acc: 0.8799
+    25000/25000 [==============================] - 11s 429us/sample - loss: 0.3693 - acc: 0.8570 - val_loss: 0.2994 - val_acc: 0.8801
     Epoch 4/10
-    25000/25000 [==============================] - 11s 428us/sample - loss: 0.2725 - acc: 0.8964 - val_loss: 0.2889 - val_acc: 0.8858
+    25000/25000 [==============================] - 11s 431us/sample - loss: 0.2771 - acc: 0.8944 - val_loss: 0.2812 - val_acc: 0.8856
     Epoch 5/10
-    25000/25000 [==============================] - 11s 440us/sample - loss: 0.2404 - acc: 0.9116 - val_loss: 0.2897 - val_acc: 0.8878
+    25000/25000 [==============================] - 11s 430us/sample - loss: 0.2362 - acc: 0.9121 - val_loss: 0.2787 - val_acc: 0.8886
     Epoch 6/10
-    25000/25000 [==============================] - 11s 447us/sample - loss: 0.2154 - acc: 0.9226 - val_loss: 0.2863 - val_acc: 0.8890
+    25000/25000 [==============================] - 11s 430us/sample - loss: 0.2130 - acc: 0.9225 - val_loss: 0.2794 - val_acc: 0.8904
     Epoch 7/10
-    25000/25000 [==============================] - 11s 446us/sample - loss: 0.1961 - acc: 0.9301 - val_loss: 0.2897 - val_acc: 0.8896
+    25000/25000 [==============================] - 11s 429us/sample - loss: 0.1942 - acc: 0.9309 - val_loss: 0.2826 - val_acc: 0.8897
     Epoch 8/10
-    25000/25000 [==============================] - 11s 446us/sample - loss: 0.1781 - acc: 0.9376 - val_loss: 0.2981 - val_acc: 0.8891
+    25000/25000 [==============================] - 11s 426us/sample - loss: 0.1779 - acc: 0.9376 - val_loss: 0.2919 - val_acc: 0.8887
     Epoch 9/10
-    25000/25000 [==============================] - 11s 440us/sample - loss: 0.1629 - acc: 0.9434 - val_loss: 0.3057 - val_acc: 0.8896
+    25000/25000 [==============================] - 11s 426us/sample - loss: 0.1661 - acc: 0.9411 - val_loss: 0.2978 - val_acc: 0.8881
     Epoch 10/10
-    25000/25000 [==============================] - 11s 447us/sample - loss: 0.1502 - acc: 0.9488 - val_loss: 0.3148 - val_acc: 0.8865
+    25000/25000 [==============================] - 11s 430us/sample - loss: 0.1532 - acc: 0.9473 - val_loss: 0.3080 - val_acc: 0.8864
 
 
 ### Prediction
@@ -533,11 +468,11 @@ oh_print(t4)
 oh_print(t5)
 ```
 
-    0.15896 | Tacos in England is absolutely terrible .
-    0.54170 | Tacos in England absolutely terible .
-    0.19882 | Tacos in Prague are not so bad .
-    0.65082 | Mexican food in SD is the best .
-    0.46305 | I'm a big fan of tacos .
+    0.17458 | Tacos in England is absolutely terrible .
+    0.57092 | Tacos in England absolutely terible .
+    0.18041 | Tacos in Prague are not so bad .
+    0.64227 | Mexican food in SD is the best .
+    0.43182 | I'm a big fan of tacos .
 
 
 ## TF*IDF
@@ -556,14 +491,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 tfidf = TfidfVectorizer(preprocessor=dummy_func, tokenizer=dummy_func, min_df=5, max_features=20000)
 tfidf.fit(train_df.tokenized)
-print(f'Length of vocabulary: {len(tfidf.vocabulary_)}')
+print(f'Feature Dimensions: {(len(train_df), len(tfidf.vocabulary_))}')
 ```
 
     /usr/local/lib/python3.6/dist-packages/sklearn/feature_extraction/text.py:507: UserWarning: The parameter 'token_pattern' will not be used since 'tokenizer' is not None'
       warnings.warn("The parameter 'token_pattern' will not be used"
 
 
-    Length of vocabulary: 20000
+    Feature Dimensions: (25000, 20000)
 
 
 ### Training
@@ -581,25 +516,25 @@ tfidf_history = tfidf_model.fit(
 
     Train on 25000 samples, validate on 10000 samples
     Epoch 1/10
-    25000/25000 [==============================] - 16s 631us/sample - loss: 0.7193 - acc: 0.4935 - val_loss: 0.6928 - val_acc: 0.5094
+    25000/25000 [==============================] - 11s 457us/sample - loss: 0.7309 - acc: 0.4942 - val_loss: 0.6929 - val_acc: 0.5009
     Epoch 2/10
-    25000/25000 [==============================] - 15s 603us/sample - loss: 0.7082 - acc: 0.5043 - val_loss: 0.6925 - val_acc: 0.5094
+    25000/25000 [==============================] - 11s 433us/sample - loss: 0.7133 - acc: 0.5060 - val_loss: 0.6927 - val_acc: 0.5009
     Epoch 3/10
-    25000/25000 [==============================] - 15s 601us/sample - loss: 0.7056 - acc: 0.4969 - val_loss: 0.6928 - val_acc: 0.4906
+    25000/25000 [==============================] - 11s 433us/sample - loss: 0.7085 - acc: 0.5038 - val_loss: 0.6929 - val_acc: 0.4991
     Epoch 4/10
-    25000/25000 [==============================] - 15s 604us/sample - loss: 0.7022 - acc: 0.5004 - val_loss: 0.6917 - val_acc: 0.5094
+    25000/25000 [==============================] - 11s 430us/sample - loss: 0.7073 - acc: 0.5016 - val_loss: 0.6921 - val_acc: 0.6794
     Epoch 5/10
-    25000/25000 [==============================] - 15s 600us/sample - loss: 0.7001 - acc: 0.5043 - val_loss: 0.6908 - val_acc: 0.5254
+    25000/25000 [==============================] - 14s 569us/sample - loss: 0.7016 - acc: 0.5012 - val_loss: 0.6913 - val_acc: 0.7649
     Epoch 6/10
-    25000/25000 [==============================] - 15s 607us/sample - loss: 0.6955 - acc: 0.5137 - val_loss: 0.6881 - val_acc: 0.4928
+    25000/25000 [==============================] - 15s 584us/sample - loss: 0.6978 - acc: 0.5131 - val_loss: 0.6896 - val_acc: 0.4991
     Epoch 7/10
-    25000/25000 [==============================] - 15s 596us/sample - loss: 0.6875 - acc: 0.5418 - val_loss: 0.6702 - val_acc: 0.8352
+    25000/25000 [==============================] - 15s 585us/sample - loss: 0.6915 - acc: 0.5291 - val_loss: 0.6766 - val_acc: 0.8182
     Epoch 8/10
-    25000/25000 [==============================] - 15s 602us/sample - loss: 0.6426 - acc: 0.6451 - val_loss: 0.5603 - val_acc: 0.8419
+    25000/25000 [==============================] - 15s 581us/sample - loss: 0.6595 - acc: 0.6121 - val_loss: 0.5972 - val_acc: 0.8449
     Epoch 9/10
-    25000/25000 [==============================] - 15s 598us/sample - loss: 0.5124 - acc: 0.7650 - val_loss: 0.4084 - val_acc: 0.8503
+    25000/25000 [==============================] - 14s 576us/sample - loss: 0.5480 - acc: 0.7406 - val_loss: 0.4304 - val_acc: 0.8523
     Epoch 10/10
-    25000/25000 [==============================] - 15s 600us/sample - loss: 0.4456 - acc: 0.7982 - val_loss: 0.3603 - val_acc: 0.8582
+    25000/25000 [==============================] - 14s 577us/sample - loss: 0.4613 - acc: 0.7911 - val_loss: 0.3652 - val_acc: 0.8591
 
 
 ### Prediction
@@ -619,11 +554,11 @@ tfidf_print(t4)
 tfidf_print(t5)
 ```
 
-    0.24751 | Tacos in England is absolutely terrible .
-    0.70745 | Tacos in England absolutely terible .
-    0.30254 | Tacos in Prague are not so bad .
-    0.80555 | Mexican food in SD is the best .
-    0.72058 | I'm a big fan of tacos .
+    0.27939 | Tacos in England is absolutely terrible .
+    0.71295 | Tacos in England absolutely terible .
+    0.34786 | Tacos in Prague are not so bad .
+    0.79958 | Mexican food in SD is the best .
+    0.72528 | I'm a big fan of tacos .
 
 
 ## Subword Encoding
@@ -649,10 +584,10 @@ import tensorflow_datasets as tfds
 
 swe_encoder = tfds.features.text.SubwordTextEncoder.build_from_corpus(
     train_df.text, target_vocab_size=20000)
-print(f'Vocabulary size: {swe_encoder.vocab_size}')
+print(f'Feature Dimensions: {(len(train_df), swe_encoder.vocab_size)}')
 ```
 
-    Vocabulary size: 20068
+    Feature Dimentions: (25000, 20068)
 
 
 We can see how it splits up text here.
@@ -681,32 +616,16 @@ However, we still need to convert our Subword encodings into vectors. They will 
 
 
 ```python
-swe_train_x = np.zeros((len(train_df), encoder.vocab_size))
+swe_train_x = np.zeros((len(train_df), swe_encoder.vocab_size))
 for i, text in enumerate(train_df.text):
     for e in swe_encoder.encode(text):
         swe_train_x[i, e] += 1
 
-swe_test_x = np.zeros((len(test_df), encoder.vocab_size))
+swe_test_x = np.zeros((len(test_df), swe_encoder.vocab_size))
 for i, text in enumerate(test_df.text):
     for e in swe_encoder.encode(text):
         swe_test_x[i, e] += 1
 ```
-
-
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    <ipython-input-26-cebe30517e05> in <module>()
-    ----> 1 swe_train_x = np.zeros((len(train_df), encoder.vocab_size))
-          2 for i, text in enumerate(train_df.text):
-          3     for e in swe_encoder.encode(text):
-          4         swe_train_x[i, e] += 1
-          5 
-
-
-    NameError: name 'encoder' is not defined
-
 
 ### Training
 
@@ -721,6 +640,29 @@ swe_history = swe_model.fit(
     validation_data=(swe_test_x, test_df.sentiment)
     )
 ```
+
+    Train on 25000 samples, validate on 10000 samples
+    Epoch 1/10
+    25000/25000 [==============================] - 11s 444us/sample - loss: 0.7141 - acc: 0.5023 - val_loss: 0.6777 - val_acc: 0.7631
+    Epoch 2/10
+    25000/25000 [==============================] - 11s 436us/sample - loss: 0.6086 - acc: 0.6704 - val_loss: 0.4312 - val_acc: 0.8562
+    Epoch 3/10
+    25000/25000 [==============================] - 11s 434us/sample - loss: 0.3430 - acc: 0.8742 - val_loss: 0.3035 - val_acc: 0.8817
+    Epoch 4/10
+    25000/25000 [==============================] - 11s 435us/sample - loss: 0.2469 - acc: 0.9112 - val_loss: 0.2887 - val_acc: 0.8876
+    Epoch 5/10
+    25000/25000 [==============================] - 11s 433us/sample - loss: 0.2059 - acc: 0.9270 - val_loss: 0.2901 - val_acc: 0.8882
+    Epoch 6/10
+    25000/25000 [==============================] - 11s 434us/sample - loss: 0.1728 - acc: 0.9416 - val_loss: 0.2976 - val_acc: 0.8886
+    Epoch 7/10
+    25000/25000 [==============================] - 11s 431us/sample - loss: 0.1508 - acc: 0.9498 - val_loss: 0.3073 - val_acc: 0.8871
+    Epoch 8/10
+    25000/25000 [==============================] - 11s 435us/sample - loss: 0.1335 - acc: 0.9562 - val_loss: 0.3250 - val_acc: 0.8847
+    Epoch 9/10
+    25000/25000 [==============================] - 11s 434us/sample - loss: 0.1186 - acc: 0.9627 - val_loss: 0.3394 - val_acc: 0.8846
+    Epoch 10/10
+    25000/25000 [==============================] - 11s 433us/sample - loss: 0.1075 - acc: 0.9652 - val_loss: 0.3498 - val_acc: 0.8844
+
 
 ### Prediction
 
@@ -742,6 +684,13 @@ swe_print(t4)
 swe_print(t5)
 ```
 
+    0.09552 | Tacos in England is absolutely terrible .
+    0.65735 | Tacos in England absolutely terible .
+    0.07198 | Tacos in Prague are not so bad .
+    0.61209 | Mexican food in SD is the best .
+    0.55832 | I'm a big fan of tacos .
+
+
 ## GloVe
 
 _Word Embeddings_ are now the new normal for NLP. Two of the first, widely used, and really successful embedding algorithms were [_GloVe_](https://nlp.stanford.edu/projects/glove/) and [_Word2Vec_](https://en.wikipedia.org/wiki/Word2vec). We will be using _GloVe_ here because it is so easy to use with [_spaCy_](https://spacy.io/)
@@ -755,7 +704,7 @@ We will be using [_spaCy_](https://spacy.io/) to load our vectors
 
 
 ```python
-import en_core_web_md  # 
+import en_core_web_md  # There are easier ways to import spacy models, but not for colab
 from spacy.tokens import Doc
 ```
 
@@ -763,6 +712,66 @@ from spacy.tokens import Doc
 ```python
 nlp = en_core_web_md.load(disable=['tagger', 'parser', 'ner'])
 ```
+
+
+```python
+doc = nlp('Tacos are my favourite food.')
+print(doc[0].vector)
+print(f'Feature Dimensions: {(len(train_df), doc[0].vector.shape[0])}')
+```
+
+    [-2.5613e-01 -5.8044e-01  7.3699e-01  1.0224e-01  3.0633e-01  8.2543e-01
+      2.0214e-02  7.2938e-02  4.0591e-01  5.0618e-01  1.8421e-01  4.6015e-01
+      3.3065e-01 -1.5053e-01  6.3065e-02 -4.4431e-01 -7.1902e-02  1.9935e-01
+     -5.2998e-02  3.1779e-01 -1.4263e-01  1.5533e-01  3.3776e-01 -1.5319e-01
+     -8.7850e-02  1.4125e-01 -6.4250e-01 -2.0063e-02  3.8200e-01 -2.3199e-01
+      7.0890e-01 -3.3531e-01  4.7066e-01 -8.0234e-01 -2.6422e-01 -1.9988e-02
+      2.1466e-01 -2.0214e-01  1.2551e-01  1.3106e+00 -3.6580e-01  3.1551e-01
+      4.1100e-01  2.3948e-01  2.3006e-01  7.2661e-01  1.0138e-01  3.9562e-01
+      1.0115e-01 -4.7646e-02 -3.2069e-01  5.6321e-01  2.8439e-01 -2.0420e-01
+      6.3218e-01  8.1519e-02 -3.3584e-01  4.2714e-01  3.9305e-01  4.2263e-01
+      7.5474e-01 -2.4415e-01  1.6967e-01  6.3332e-01  6.7876e-01 -1.2870e+00
+      8.0630e-01 -2.1743e-01 -2.0185e-01  6.2304e-01 -1.1730e-01  5.7444e-01
+     -2.4795e-01  9.7829e-02 -2.4434e-01 -3.3781e-01 -2.9350e-01 -3.3287e-01
+      3.4759e-01  8.3573e-02 -1.7077e-01 -6.4838e-02  3.2421e-01 -7.8467e-01
+      2.6655e-01 -3.5673e-01  9.6335e-01  4.1185e-02 -3.2752e-01 -2.6889e-01
+     -7.3435e-02 -5.2413e-01  4.8731e-02 -7.5832e-02 -1.0911e-02  1.2431e+00
+     -2.6578e-01 -2.9002e-01  2.1060e-01  3.3374e-02 -4.7119e-01 -3.0898e-01
+      4.0048e-01  2.1442e-01  2.9885e-02 -4.1926e-01  1.0002e+00 -5.8242e-01
+      3.8794e-01 -1.8581e-01  6.5638e-02 -9.2812e-01 -2.2129e-01 -1.2261e-01
+      8.1768e-01 -5.8867e-02  6.2210e-02 -1.7201e-01 -6.2586e-02  1.8723e-01
+     -3.6349e-02  9.5947e-02  2.2519e-01 -3.2230e-01  3.9222e-01 -3.4604e-01
+      7.7258e-01 -5.0809e-01 -1.2575e-01 -1.0941e-01  2.6108e-01 -3.1366e-01
+     -2.3453e-01  1.7091e-01 -7.2976e-01  1.6821e-01  1.4898e-01  1.1957e-01
+     -2.3763e-01  5.8118e-02 -2.1701e+00  3.8178e-02  3.9558e-01  3.1910e-01
+     -2.3986e-02 -2.4579e-01  1.8423e-01 -2.4629e-01  4.9162e-01 -5.5634e-02
+      1.0874e-01  2.6922e-01  2.7689e-01  1.7463e-01  6.1352e-01 -4.2668e-01
+      3.7819e-01 -4.5891e-01  4.9385e-01 -2.1813e-01 -2.6640e-01  6.0483e-01
+      5.7935e-02 -1.4011e-01  3.4351e-01  1.0884e-01  2.3097e-01 -1.8915e-01
+      5.7085e-01  1.8732e-01  3.4241e-01  1.2116e-01  1.2850e-01 -2.5109e-01
+     -8.1215e-01 -3.2012e-01 -8.7769e-02 -5.1965e-01 -1.6670e-01 -9.9712e-01
+     -2.6783e-01 -6.4495e-01 -8.0303e-02 -4.1933e-01 -2.5039e-01  3.7867e-02
+      4.8732e-01  1.2410e-01  4.1902e-01  6.1750e-01  2.9430e-01  4.7489e-01
+     -3.7390e-01 -3.7893e-01 -3.6163e-01  1.8087e-01  2.1228e-01  7.6915e-01
+      8.4314e-02  2.9651e-01  4.1937e-05 -2.0844e-01  1.2065e-01  1.5048e-01
+      6.3898e-01 -6.3227e-01  1.3672e-01  4.6778e-01  6.4333e-01  5.7747e-01
+     -1.3949e-01  9.6213e-02  3.1122e-03  4.4591e-01  1.4979e-02  1.0298e-01
+     -1.9341e-01  3.3355e-02 -8.4310e-02  1.7021e-01 -4.4298e-01 -7.7529e-02
+     -3.6328e-01  2.7908e-01  4.2524e-01 -4.2924e-01 -6.6251e-01  1.7692e-01
+     -2.5762e-01 -2.5771e-01 -1.7190e-01 -2.2101e-03  6.8176e-02 -9.8719e-02
+      4.3295e-01  2.7423e-02 -4.9185e-02 -2.3505e-02  9.5238e-01  1.2283e-02
+      2.1610e-01 -1.4263e-01 -1.1390e+00 -4.6599e-01  2.0868e-01  5.1458e-01
+      1.6683e-02 -5.6320e-01 -1.0471e-01 -4.9151e-01 -4.5850e-01 -1.7954e-01
+     -2.7450e-01  6.4885e-01 -1.3360e-01  4.5866e-01  1.8835e-01  2.2054e-01
+      1.6657e-01 -1.5053e-02 -1.9662e-01 -1.2389e-01 -1.2536e+00 -5.0888e-01
+      2.0747e-01  4.9005e-01 -3.5919e-01 -1.0353e-01 -4.4302e-01  4.3525e-01
+     -1.2347e-02  1.4503e-02 -4.4328e-01  3.2379e-01  4.4881e-01 -2.0649e-01
+     -7.0943e-02 -1.5007e-01  7.9022e-02  9.5702e-01  2.7648e-01 -5.4444e-02
+     -8.1054e-01 -3.4024e-01  2.4129e-01  4.5056e-01  2.9362e-01  9.1667e-01
+     -2.3756e-01  9.1819e-02  8.5017e-01 -7.4455e-02 -4.8788e-01 -4.1860e-02
+      1.0966e-01 -1.1141e-01  4.5306e-01 -7.1920e-01  3.9163e-01 -2.7233e-01]
+    Feature Dimensions: (25000, 300)
+
 
 
 ```python
@@ -787,6 +796,29 @@ glove_history = glove_model.fit(
     )
 ```
 
+    Train on 25000 samples, validate on 10000 samples
+    Epoch 1/10
+    25000/25000 [==============================] - 2s 96us/sample - loss: 0.7113 - acc: 0.5029 - val_loss: 0.6922 - val_acc: 0.5009
+    Epoch 2/10
+    25000/25000 [==============================] - 2s 86us/sample - loss: 0.7059 - acc: 0.4998 - val_loss: 0.6900 - val_acc: 0.5022
+    Epoch 3/10
+    25000/25000 [==============================] - 2s 86us/sample - loss: 0.6970 - acc: 0.5197 - val_loss: 0.6775 - val_acc: 0.7121
+    Epoch 4/10
+    25000/25000 [==============================] - 2s 86us/sample - loss: 0.6574 - acc: 0.6154 - val_loss: 0.5790 - val_acc: 0.7667
+    Epoch 5/10
+    25000/25000 [==============================] - 2s 85us/sample - loss: 0.5425 - acc: 0.7441 - val_loss: 0.4668 - val_acc: 0.7897
+    Epoch 6/10
+    25000/25000 [==============================] - 2s 86us/sample - loss: 0.4885 - acc: 0.7757 - val_loss: 0.4380 - val_acc: 0.7992
+    Epoch 7/10
+    25000/25000 [==============================] - 2s 86us/sample - loss: 0.4745 - acc: 0.7827 - val_loss: 0.4257 - val_acc: 0.8084
+    Epoch 8/10
+    25000/25000 [==============================] - 2s 85us/sample - loss: 0.4563 - acc: 0.7946 - val_loss: 0.4172 - val_acc: 0.8129
+    Epoch 9/10
+    25000/25000 [==============================] - 2s 85us/sample - loss: 0.4495 - acc: 0.7984 - val_loss: 0.4102 - val_acc: 0.8154
+    Epoch 10/10
+    25000/25000 [==============================] - 2s 86us/sample - loss: 0.4455 - acc: 0.7972 - val_loss: 0.4037 - val_acc: 0.8194
+
+
 ### Prediction
 
 
@@ -805,6 +837,13 @@ swe_print(t4)
 swe_print(t5)
 ```
 
+    0.09552 | Tacos in England is absolutely terrible .
+    0.65735 | Tacos in England absolutely terible .
+    0.07198 | Tacos in Prague are not so bad .
+    0.61209 | Mexican food in SD is the best .
+    0.55832 | I'm a big fan of tacos .
+
+
 ## Conclusion
 
 This was by no means a comprehensive comparison of NLP feature selection. But we can see that the features we use can make a large difference
@@ -819,17 +858,25 @@ print(f"{oh_predict(t4):.3f} | {tfidf_predict(t4):.3f} | {swe_predict(t4):.3f} |
 print(f"{oh_predict(t5):.3f} | {tfidf_predict(t5):.3f} | {swe_predict(t5):.3f} | {glove_predict(t5):.3f} | {t5}")
 ```
 
+    O-H   | TFIDF | SWE   | GloVe | Text
+    0.175 | 0.279 | 0.096 | 0.196 | Tacos in England is absolutely terrible .
+    0.571 | 0.713 | 0.657 | 0.079 | Tacos in England absolutely terible .
+    0.180 | 0.348 | 0.072 | 0.169 | Tacos in Prague are not so bad .
+    0.642 | 0.800 | 0.612 | 0.938 | Mexican food in SD is the best .
+    0.432 | 0.725 | 0.558 | 0.896 | I'm a big fan of tacos .
+
+
 
 ```python
 import matplotlib.pyplot as plt
 # Plot training & validation accuracy values
 fig = plt.figure(figsize=(15, 4))
-plt.plot(glove_hist.history['val_acc'], color='red')
+plt.plot(glove_history.history['val_acc'], color='red')
 plt.plot(swe_history.history['val_acc'], color='blue')
 plt.plot(tfidf_history.history['val_acc'], color='green')
 plt.plot(oh_history.history['val_acc'], color='orange')
 
-plt.plot(glove_hist.history['acc'], ls='--', color='red')
+plt.plot(glove_history.history['acc'], ls='--', color='red')
 plt.plot(swe_history.history['acc'], ls='--', color='blue')
 plt.plot(tfidf_history.history['acc'], ls='--', color='green')
 plt.plot(oh_history.history['acc'], ls='--', color='orange')
@@ -847,7 +894,7 @@ plt.plot(swe_history.history['val_loss'], color='blue')
 plt.plot(tfidf_history.history['val_loss'], color='green')
 plt.plot(oh_history.history['val_loss'], color='orange')
 
-plt.plot(glove_hist.history['loss'], ls='--', color='red')
+plt.plot(glove_history.history['loss'], ls='--', color='red')
 plt.plot(swe_history.history['loss'], ls='--', color='blue')
 plt.plot(tfidf_history.history['loss'], ls='--', color='green')
 plt.plot(oh_history.history['loss'], ls='--', color='orange')
@@ -859,6 +906,14 @@ plt.legend(['GloVe Val', 'SWE Val', 'TFIDF Val', 'One-Hot Val', 'GloVe', 'SWE', 
 plt.show()
 
 ```
+
+
+![png](images/output_65_0.png)
+
+
+
+![png](images/output_65_1.png)
+
 
 ## Going Further
 
